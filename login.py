@@ -80,7 +80,7 @@ class Login:
                 if idchecker() == 1 and emailchecker() == 1:
                     messagebox.showinfo("You Qualify", "Enter the game!")
                     root.destroy()
-                    import tshapes
+                    import play
 
             except ValueError:
                 messagebox.showerror("Invalid Input", "ID must be a number")
