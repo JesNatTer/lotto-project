@@ -5,6 +5,9 @@ import datetime as dt
 from tkinter.font import Font
 import re
 import random
+import requests
+import smtplib
+
 
 root = tk.Tk()
 root.title('Ithuba National Lottery of South Africa')
@@ -13,32 +16,37 @@ root.config(bg='yellow')
 root.resizable(0, 0)
 
 date = dt.date.today()
+time = dt.datetime.now().strftime("%H:%M:%S")
 regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 score = 0
 winningtotal = 0
 font1 = Font(family='Helvetica', size=40)
+playerID = ''
+game = 0
+canvas = Canvas(root, width=400, height=550)
+canvas.place(x=0, y=0)
+img = PhotoImage(file="2021_06_17_0n3_Kleki.png")
+canvas.create_image(198, 275, image=img)
+
 
 class Login:
     def __init__(self, master):
-        self.frame = Frame(master, bg='red', width=350, height=300)
-        self.frame.place(x=25, y=200)
-
-        self.details = Label(self.frame, text="Enter your details", bg='red')
+        self.details = Label(master, text="Enter your details", bg='red')
         self.details.place(x=120, y=10)
 
-        self.nameLabel = Label(self.frame, text="Name", bg='red')
+        self.nameLabel = Label(master, text="Name", bg='red')
         self.nameLabel.place(x=30, y=30)
-        self.nameEntry = Entry(self.frame)
+        self.nameEntry = Entry(master)
         self.nameEntry.place(x=100, y=30)
 
-        self.emailLabel = Label(self.frame, text="Email", bg='red')
+        self.emailLabel = Label(master, text="Email", bg='red')
         self.emailLabel.place(x=30, y=60)
-        self.emailEntry = Entry(self.frame)
+        self.emailEntry = Entry(master)
         self.emailEntry.place(x=100, y=60)
 
-        self.idLabel = Label(self.frame, text='ID', bg='red')
+        self.idLabel = Label(master, text='ID', bg='red')
         self.idLabel.place(x=30, y=90)
-        self.idEntry = Entry(self.frame)
+        self.idEntry = Entry(master)
         self.idEntry.place(x=100, y=90)
         self.score = 0
 
@@ -95,18 +103,19 @@ class Login:
                 messagebox.showerror("Invalid Input", "ID must be a number")
                 self.idEntry.delete(0, END)
 
-        self.theButton = Button(self.frame, text="Enter", command=confirmingdetails)
+        self.theButton = Button(master, text="Enter", command=confirmingdetails)
         self.theButton.place(x=130, y=130)
 
     def playscreen(self):
         playsc = Toplevel()
         playsc.title('Ithuba National Lottery of South Africa - Play')
-        playsc.geometry('400x550')
+        playsc.geometry('700x550')
         playsc.config(bg='yellow')
         playsc.resizable(0, 0)
         list1 = []
         list2 = []
         list3 = []
+        game = 1
         font1 = Font(family='Helvetica', size=35)
 
         def play(num):
@@ -272,8 +281,14 @@ class Login:
         btn48.place(x=100, y=210)
         btn49 = Button(playsc, text=49, width=1, command=lambda: play(49))
         btn49.place(x=140, y=210)
-        total = Label(playsc, text="")
-        total.place(x=10, y=530)
+        total = Label(playsc, text="", bg='yellow')
+        total.place(x=450, y=200)
+        playeridLabel = Label(playsc, text="PlayerID: ", bg='yellow')
+        playeridLabel.place(x=450, y=100)
+        global playerID
+        playerID = self.nameEntry.get() + '#' + self.idEntry.get()[0:6] + str(random.randint(1,3))
+        playerid = Label(playsc, bg='yellow', text=playerID)
+        playerid.place(x=520, y=100)
 
         set1 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
         set1.place(x=0, y=260)
@@ -283,8 +298,10 @@ class Login:
         set3.place(x=0, y=360)
 
         def lotto():
+            global game
+            game += 1
             lottonums = random.sample(range(1, 49), 6)
-            matches = [2.00, 100.00, 20.00, 100.50, 2384.00, 8584.00, 10000000.00]
+            matches = [0, 0, 20.00, 100.50, 2384.00, 8584.00, 10000000.00]
             matches1 = 0
             matches2 = 0
             matches3 = 0
@@ -315,6 +332,10 @@ class Login:
             if played == 1 and played2 == 0 and played3 == 0:
                 winningtotal = matches[matches1]
                 score = score + winningtotal
+                text = open("playerlog.txt", "+a")
+                text.write("\n\nGame :" + str(game) + "\n" + str(date) + "   " +str(time) + "\nPlayer ID: " + str(playerID)
+                           + "\nWinning numbers: " + str(lottonums) + "\nWinning Total: " + str(winningtotal) + "\nMatches: " + str(matches1))
+                text.close()
                 if matches1 < 2:
                     messagebox.showinfo('Results', str(lottonums) + '\n' + 'Your matches are: ' + str(
                         matches1) + '\n'
@@ -327,6 +348,11 @@ class Login:
             elif played == 1 and played2 == 1 and played3 == 0:
                 winningtotal = matches[matches1] + matches[matches2]
                 score = score + winningtotal
+                text = open("playerlog.txt", "+a")
+                text.write("\n\nGame :" + str(game) + "\n" + str(date) + "   " +str(time) + "\nPlayer ID: " + str(playerID)
+                           + "\nWinning numbers: " + str(lottonums) + "\nWinning Total: " + str(
+                    winningtotal) + "\nFirst Set Matches: " + str(matches1) + "\nSecond Set Matches: " + str(matches2))
+                text.close()
                 if winningtotal == 0:
                     messagebox.showinfo('Results',
                                         str(lottonums) + '\n' + "Your first set's matches are: " + str(
@@ -344,6 +370,12 @@ class Login:
             elif played == 1 and played2 == 1 and played3 == 1:
                 winningtotal = matches[matches1] + matches[matches2] + matches[matches3]
                 score = score + winningtotal
+                text = open("playerlog.txt", "+a")
+                text.write("\n\nGame :" + str(game) + "\n" + str(date) + "   " +str(time) + "\nPlayer ID: " + str(playerID) + "\nWinning numbers: " + str(lottonums) + "\nWinning Total: " + str(
+                    winningtotal) + "\nFirst Set Matches: " + str(matches1) + "\nSecond Set Matches: " + str(matches2)
+                           + "\nThird Set Matches: " + str(matches3))
+                text.close()
+
                 if winningtotal == 0:
                     messagebox.showinfo('Results',
                                         str(lottonums) + '\n' + "Your first set's matches are: "
@@ -443,7 +475,11 @@ class Login:
         claimsc = Toplevel()
         claimsc.geometry('450x450')
         font = Font(family='Helvetica', size=30)
+        currencyConverter = requests.get("https://v6.exchangerate-api.com/v6/55fb55ceb1003bf5512656e2/latest/ZAR")
         value_inside = StringVar(claimsc)
+        currencyOptions = currencyConverter.json()['conversion_rates']
+        currencyset = StringVar(claimsc)
+        currencyset.set('ZAR')
 
         value_inside.set("Select Bank")
         bankoptions = ['ABSA', 'Capitec', 'FNB', 'Nedbank']
@@ -471,6 +507,25 @@ class Login:
         bankNrLabel.place(x=30, y=200)
         bankNrEntry = Entry(claimsc, state='readonly')
         bankNrEntry.place(x=150, y=200)
+        currencyLabel = Label(claimsc, text="Select currency")
+        currencyLabel.place(x=30, y=230)
+        winnings = score
+
+        currencySelector = OptionMenu(claimsc, currencyset, *currencyOptions)
+        currencySelector.place(x=150, y=230)
+
+        def convert():
+            if currencyset.get() == 'ZAR':
+                currentwin = winnings
+            else:
+                currentwin = winnings * currencyOptions[currencyset.get()]
+                winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
+
+        currencyConvert = Button(claimsc, text="Convert", command=convert)
+        currencyConvert.place(x=280, y=230)
+        winningsLabel = Label(claimsc, text="Your winnings: ZAR" + str(winnings))
+        winningsLabel.place(x=30, y=280)
+
 
         def claim():
             if accountNameEntry.get() == '' or bankNrEntry.get() == '':
@@ -481,7 +536,33 @@ class Login:
                     if str.isalpha(accountNameEntry.get()) is False:
                         raise InvalidAccountName
                     else:
-                        messagebox.showinfo("test", score)
+                        text = open("playerlog.txt", "+a")
+                        text.write("\n\n" + str(date) + "   " + str(time) + "\nPlayer Name: " + self.nameEntry.get() + "\n"
+                                   + "Nr of Games: " + str(game) + "\nEmail: " + self.emailEntry.get()
+                                   + "\nTotal Amount Winned: " + str(winningsLabel.cget('text')))
+                        text.close()
+                        messagebox.showinfo("Thank You For Playing!", "Check your email for further instructions.")
+                        s = smtplib.SMTP('smtp.gmail.com', 587)
+                        sender_email_id = 'lottoemail123@gmail.com'
+                        receiver_email_id = self.emailEntry.get()
+                        password = 'MonkeyVillage123'
+
+                        s.starttls()
+
+                        s.login(sender_email_id, password)
+
+                        message = "Subject: Congratulations!!!\n"
+                        message = message + "Thank you for playing " + self.nameEntry.get() + "\nYour winnings are: " \
+                                  + winningsLabel.cget(
+                            'text') + "\nBelow are your details:" + "\nPlayer ID: " + playerID + "\nAccount name: " \
+                                  + accountNameEntry.get() + "\nAccount number: " + bankNrEntry.get()
+
+                        s.sendmail(sender_email_id, receiver_email_id, message)
+
+                        s.quit()
+                        claimsc.destroy()
+                        root.destroy()
+
                 except ValueError:
                     messagebox.showerror("Invalid Bank Number", "Please enter valid bank number (digits only)")
                 except InvalidAccountName:
@@ -496,3 +577,6 @@ class Login:
 page = Login(root)
 
 root.mainloop()
+
+
+#\n
