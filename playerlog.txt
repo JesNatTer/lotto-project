@@ -1,0 +1,17 @@
+Player: Jesse
+Email: jessenterblanche@gmail.com
+ID: 0012085583081
+
+Game :1
+2021-06-18   15:30:34
+Player ID: Jesse#0012081
+Winning numbers: [47, 12, 22, 15, 9, 21]
+Winning Total: 0
+Matches: 0
+
+Game :2
+2021-06-18   15:30:34
+Player ID: Jesse#0012081
+Winning numbers: [40, 1, 24, 2, 25, 21]
+Winning Total: 0
+Matches: 0

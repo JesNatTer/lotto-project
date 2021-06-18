@@ -7,12 +7,15 @@ import re
 import random
 import requests
 import smtplib
+from playsound import playsound
 
 
 root = tk.Tk()
 root.title('Ithuba National Lottery of South Africa')
 root.geometry('400x550')
 root.config(bg='yellow')
+root.wm_attributes('-alpha', 0)
+
 root.resizable(0, 0)
 
 date = dt.date.today()
@@ -23,31 +26,36 @@ winningtotal = 0
 font1 = Font(family='Helvetica', size=40)
 playerID = ''
 game = 0
-canvas = Canvas(root, width=400, height=550)
+canvas = Canvas(root, width=400, height=550, highlightbackground='yellow')
 canvas.place(x=0, y=0)
-img = PhotoImage(file="2021_06_17_0n3_Kleki.png")
-canvas.create_image(198, 275, image=img)
+img = PhotoImage(file="./images/2021_06_17_0n3_Kleki.png")
+canvas.create_image(200, 275, image=img)
 
 
 class Login:
     def __init__(self, master):
-        self.details = Label(master, text="Enter your details", bg='red')
-        self.details.place(x=120, y=10)
+        self.lottocanvas = Canvas(root, width=400, height=200, bg="yellow", highlightbackground="yellow")
+        self.lottocanvas.place(x=0, y=0)
+        self.image = PhotoImage(file="./images/lottosymbol.png")
+        self.image.subsample(4)
+        self.lottocanvas.create_image(190, 100, image=self.image)
+        self.details = Label(master, text="Enter your details", bg='yellow')
+        self.details.place(x=145, y=260)
 
-        self.nameLabel = Label(master, text="Name", bg='red')
-        self.nameLabel.place(x=30, y=30)
+        self.nameLabel = Label(master, text="Name", bg="red")
+        self.nameLabel.place(x=80, y=330)
         self.nameEntry = Entry(master)
-        self.nameEntry.place(x=100, y=30)
+        self.nameEntry.place(x=130, y=330)
 
         self.emailLabel = Label(master, text="Email", bg='red')
-        self.emailLabel.place(x=30, y=60)
+        self.emailLabel.place(x=80, y=360)
         self.emailEntry = Entry(master)
-        self.emailEntry.place(x=100, y=60)
+        self.emailEntry.place(x=130, y=360)
 
         self.idLabel = Label(master, text='ID', bg='red')
-        self.idLabel.place(x=30, y=90)
+        self.idLabel.place(x=80, y=390)
         self.idEntry = Entry(master)
-        self.idEntry.place(x=100, y=90)
+        self.idEntry.place(x=130, y=390)
         self.score = 0
 
         def confirmingdetails():
@@ -82,6 +90,7 @@ class Login:
                             return 1
                         else:
                             messagebox.showerror("Do not meet age requirement", "You are too young to play the lotto.")
+                            playsound("./sounds/362206__taranp__horn-fail-wahwah-1.wav")
                             root.destroy()
 
                 def emailchecker():
@@ -95,6 +104,7 @@ class Login:
                     text.write("Player: " + self.nameEntry.get() + "\nEmail: " + self.emailEntry.get()
                                + "\nID: " + self.idEntry.get())
                     text.close()
+                    playsound("./sounds/171671__leszek-szary__success-1.wav")
                     messagebox.showinfo("You Qualify", "Enter the game!")
                     root.withdraw()
                     self.playscreen()
@@ -104,7 +114,7 @@ class Login:
                 self.idEntry.delete(0, END)
 
         self.theButton = Button(master, text="Enter", command=confirmingdetails)
-        self.theButton.place(x=130, y=130)
+        self.theButton.place(x=180, y=420)
 
     def playscreen(self):
         playsc = Toplevel()
@@ -112,11 +122,19 @@ class Login:
         playsc.geometry('700x550')
         playsc.config(bg='yellow')
         playsc.resizable(0, 0)
+        playcanvas = Canvas(playsc, width=800, height=600, highlightbackground='yellow')
+        playcanvas.place(x=0, y=-1)
+        playbackimg = PhotoImage(file="./images/Screen2back.png")
+        playcanvas.create_image(400, 290, image=playbackimg)
         list1 = []
         list2 = []
         list3 = []
         game = 1
         font1 = Font(family='Helvetica', size=35)
+        rightcanvas = Canvas(playsc, width=300, height=250, highlightbackground='red', bg='red')
+        rightcanvas.place(x=400, y=0)
+        rightimg = PhotoImage(file="./images/lottocircle.png")
+        rightcanvas.create_image(150, 100, image=rightimg)
 
         def play(num):
             if len(list1) == 5:
@@ -183,112 +201,112 @@ class Login:
                 btn48.config(state=DISABLED)
                 btn49.config(state=DISABLED)
 
-        btn1 = Button(playsc, text=1, command=lambda: play(1))
+        btn1 = Button(playsc, text=1, bg='#fffa69', highlightbackground='yellow', command=lambda: play(1))
         btn1.place(x=20, y=10)
-        btn2 = Button(playsc, text=2, command=lambda: play(2))
+        btn2 = Button(playsc, text=2, bg='#fffa69', highlightbackground='yellow', command=lambda: play(2))
         btn2.place(x=60, y=10)
-        btn3 = Button(playsc, text=3, command=lambda: play(3))
+        btn3 = Button(playsc, text=3, bg='#fffa69', highlightbackground='yellow', command=lambda: play(3))
         btn3.place(x=100, y=10)
-        btn4 = Button(playsc, text=4, command=lambda: play(4))
+        btn4 = Button(playsc, text=4, bg='#fffa69', highlightbackground='yellow', command=lambda: play(4))
         btn4.place(x=140, y=10)
-        btn5 = Button(playsc, text=5, command=lambda: play(5))
+        btn5 = Button(playsc, text=5, bg='#fffa69', highlightbackground='yellow', command=lambda: play(5))
         btn5.place(x=180, y=10)
-        btn6 = Button(playsc, text=6, command=lambda: play(6))
+        btn6 = Button(playsc, text=6, bg='#fffa69', highlightbackground='yellow', command=lambda: play(6))
         btn6.place(x=220, y=10)
-        btn7 = Button(playsc, text=7, command=lambda: play(7))
+        btn7 = Button(playsc, text=7, bg='#fffa69', highlightbackground='yellow', command=lambda: play(7))
         btn7.place(x=260, y=10)
-        btn8 = Button(playsc, text=8, command=lambda: play(8))
+        btn8 = Button(playsc, text=8, bg='#fffa69', highlightbackground='yellow', command=lambda: play(8))
         btn8.place(x=300, y=10)
-        btn9 = Button(playsc, text=9, command=lambda: play(9))
+        btn9 = Button(playsc, text=9, bg='#fffa69', highlightbackground='yellow', command=lambda: play(9))
         btn9.place(x=340, y=10)
-        btn10 = Button(playsc, text=10, width=1, command=lambda: play(10))
+        btn10 = Button(playsc, text=10, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(10))
         btn10.place(x=20, y=50)
-        btn11 = Button(playsc, text=11, width=1, command=lambda: play(11))
+        btn11 = Button(playsc, text=11, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(11))
         btn11.place(x=60, y=50)
-        btn12 = Button(playsc, text=12, width=1, command=lambda: play(12))
+        btn12 = Button(playsc, text=12, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(12))
         btn12.place(x=100, y=50)
-        btn13 = Button(playsc, text=13, width=1, command=lambda: play(13))
+        btn13 = Button(playsc, text=13, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(13))
         btn13.place(x=140, y=50)
-        btn14 = Button(playsc, text=14, width=1, command=lambda: play(14))
+        btn14 = Button(playsc, text=14, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(14))
         btn14.place(x=180, y=50)
-        btn15 = Button(playsc, text=15, width=1, command=lambda: play(15))
+        btn15 = Button(playsc, text=15, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(15))
         btn15.place(x=220, y=50)
-        btn16 = Button(playsc, text=16, width=1, command=lambda: play(16))
+        btn16 = Button(playsc, text=16, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(16))
         btn16.place(x=260, y=50)
-        btn17 = Button(playsc, text=17, width=1, command=lambda: play(17))
+        btn17 = Button(playsc, text=17, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(17))
         btn17.place(x=300, y=50)
-        btn18 = Button(playsc, text=18, width=1, command=lambda: play(18))
+        btn18 = Button(playsc, text=18, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(18))
         btn18.place(x=340, y=50)
-        btn19 = Button(playsc, text=19, width=1, command=lambda: play(19))
+        btn19 = Button(playsc, text=19, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(19))
         btn19.place(x=20, y=90)
-        btn20 = Button(playsc, text=20, width=1, command=lambda: play(20))
+        btn20 = Button(playsc, text=20, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(20))
         btn20.place(x=60, y=90)
-        btn21 = Button(playsc, text=21, width=1, command=lambda: play(21))
+        btn21 = Button(playsc, text=21, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(21))
         btn21.place(x=100, y=90)
-        btn22 = Button(playsc, text=22, width=1, command=lambda: play(22))
+        btn22 = Button(playsc, text=22, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(22))
         btn22.place(x=140, y=90)
-        btn23 = Button(playsc, text=23, width=1, command=lambda: play(23))
+        btn23 = Button(playsc, text=23, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(23))
         btn23.place(x=180, y=90)
-        btn24 = Button(playsc, text=24, width=1, command=lambda: play(24))
+        btn24 = Button(playsc, text=24, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(24))
         btn24.place(x=220, y=90)
-        btn25 = Button(playsc, text=25, width=1, command=lambda: play(25))
+        btn25 = Button(playsc, text=25, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(25))
         btn25.place(x=260, y=90)
-        btn26 = Button(playsc, text=26, width=1, command=lambda: play(26))
+        btn26 = Button(playsc, text=26, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(26))
         btn26.place(x=300, y=90)
-        btn27 = Button(playsc, text=27, width=1, command=lambda: play(27))
+        btn27 = Button(playsc, text=27, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(27))
         btn27.place(x=340, y=90)
-        btn28 = Button(playsc, text=28, width=1, command=lambda: play(28))
+        btn28 = Button(playsc, text=28, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(28))
         btn28.place(x=20, y=130)
-        btn29 = Button(playsc, text=29, width=1, command=lambda: play(29))
+        btn29 = Button(playsc, text=29, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(29))
         btn29.place(x=60, y=130)
-        btn30 = Button(playsc, text=30, width=1, command=lambda: play(30))
+        btn30 = Button(playsc, text=30, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(30))
         btn30.place(x=100, y=130)
-        btn31 = Button(playsc, text=31, width=1, command=lambda: play(31))
+        btn31 = Button(playsc, text=31, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(31))
         btn31.place(x=140, y=130)
-        btn32 = Button(playsc, text=32, width=1, command=lambda: play(32))
+        btn32 = Button(playsc, text=32, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(32))
         btn32.place(x=180, y=130)
-        btn33 = Button(playsc, text=33, width=1, command=lambda: play(33))
+        btn33 = Button(playsc, text=33, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(33))
         btn33.place(x=220, y=130)
-        btn34 = Button(playsc, text=34, width=1, command=lambda: play(34))
+        btn34 = Button(playsc, text=34, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(34))
         btn34.place(x=260, y=130)
-        btn35 = Button(playsc, text=35, width=1, command=lambda: play(35))
+        btn35 = Button(playsc, text=35, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(35))
         btn35.place(x=300, y=130)
-        btn36 = Button(playsc, text=36, width=1, command=lambda: play(36))
+        btn36 = Button(playsc, text=36, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(36))
         btn36.place(x=340, y=130)
-        btn37 = Button(playsc, text=37, width=1, command=lambda: play(37))
+        btn37 = Button(playsc, text=37, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(37))
         btn37.place(x=20, y=170)
-        btn38 = Button(playsc, text=38, width=1, command=lambda: play(38))
+        btn38 = Button(playsc, text=38, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(38))
         btn38.place(x=60, y=170)
-        btn39 = Button(playsc, text=39, width=1, command=lambda: play(39))
+        btn39 = Button(playsc, text=39, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(39))
         btn39.place(x=100, y=170)
-        btn40 = Button(playsc, text=40, width=1, command=lambda: play(40))
+        btn40 = Button(playsc, text=40, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(40))
         btn40.place(x=140, y=170)
-        btn41 = Button(playsc, text=41, width=1, command=lambda: play(41))
+        btn41 = Button(playsc, text=41, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(41))
         btn41.place(x=180, y=170)
-        btn42 = Button(playsc, text=42, width=1, command=lambda: play(42))
+        btn42 = Button(playsc, text=42, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(42))
         btn42.place(x=220, y=170)
-        btn43 = Button(playsc, text=43, width=1, command=lambda: play(43))
+        btn43 = Button(playsc, text=43, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(43))
         btn43.place(x=260, y=170)
-        btn44 = Button(playsc, text=44, width=1, command=lambda: play(44))
+        btn44 = Button(playsc, text=44, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(44))
         btn44.place(x=300, y=170)
-        btn45 = Button(playsc, text=45, width=1, command=lambda: play(45))
+        btn45 = Button(playsc, text=45, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(45))
         btn45.place(x=340, y=170)
-        btn46 = Button(playsc, text=46, width=1, command=lambda: play(46))
+        btn46 = Button(playsc, text=46, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(46))
         btn46.place(x=20, y=210)
-        btn47 = Button(playsc, text=47, width=1, command=lambda: play(47))
+        btn47 = Button(playsc, text=47, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(47))
         btn47.place(x=60, y=210)
-        btn48 = Button(playsc, text=48, width=1, command=lambda: play(48))
+        btn48 = Button(playsc, text=48, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(48))
         btn48.place(x=100, y=210)
-        btn49 = Button(playsc, text=49, width=1, command=lambda: play(49))
+        btn49 = Button(playsc, text=49, bg='#fffa69', highlightbackground='yellow', width=1, command=lambda: play(49))
         btn49.place(x=140, y=210)
-        total = Label(playsc, text="", bg='yellow')
-        total.place(x=450, y=200)
-        playeridLabel = Label(playsc, text="PlayerID: ", bg='yellow')
-        playeridLabel.place(x=450, y=100)
+        total = Label(playsc, text="", bg='red')
+        total.place(x=520, y=300)
+        playeridLabel = Label(playsc, text="PlayerID: ", bg='red')
+        playeridLabel.place(x=450, y=250)
         global playerID
         playerID = self.nameEntry.get() + '#' + self.idEntry.get()[0:6] + str(random.randint(1,3))
-        playerid = Label(playsc, bg='yellow', text=playerID)
-        playerid.place(x=520, y=100)
+        playerid = Label(playsc, bg='red', text=playerID)
+        playerid.place(x=520, y=250)
 
         set1 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
         set1.place(x=0, y=260)
@@ -296,6 +314,13 @@ class Login:
         set2.place(x=0, y=310)
         set3 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
         set3.place(x=0, y=360)
+
+        def exitprogram():
+            playsc.destroy()
+            root.destroy()
+
+        exitbtn = Button(playsc, text="Exit", bg='red', highlightbackground='black', command=exitprogram)
+        exitbtn.place(x=520, y=500)
 
         def lotto():
             global game
@@ -337,10 +362,12 @@ class Login:
                            + "\nWinning numbers: " + str(lottonums) + "\nWinning Total: " + str(winningtotal) + "\nMatches: " + str(matches1))
                 text.close()
                 if matches1 < 2:
+                    playsound("./sounds/253174__suntemple__retro-you-lose-sfx.wav")
                     messagebox.showinfo('Results', str(lottonums) + '\n' + 'Your matches are: ' + str(
                         matches1) + '\n'
                                         + 'You won: ' + str(winningtotal))
                 else:
+                    playsound("./sounds/256128__jimhancock__tada.wav")
                     messagebox.showinfo('Congratulations',
                                         str(lottonums) + '\n' + 'Your matches are: ' + str(matches1)
                                         + '\n' + 'You won: ' + str(winningtotal))
@@ -354,6 +381,7 @@ class Login:
                     winningtotal) + "\nFirst Set Matches: " + str(matches1) + "\nSecond Set Matches: " + str(matches2))
                 text.close()
                 if winningtotal == 0:
+                    playsound("./sounds/253174__suntemple__retro-you-lose-sfx.wav")
                     messagebox.showinfo('Results',
                                         str(lottonums) + '\n' + "Your first set's matches are: " + str(
                                             matches1)
@@ -361,6 +389,7 @@ class Login:
                                             matches2) + '\n' + 'You won: '
                                         + str(winningtotal))
                 else:
+                    playsound("./sounds/256128__jimhancock__tada.wav")
                     messagebox.showinfo('Congratulations',
                                         str(lottonums) + '\n' + "Your first set's matches are: "
                                         + str(
@@ -377,6 +406,7 @@ class Login:
                 text.close()
 
                 if winningtotal == 0:
+                    playsound("./sounds/253174__suntemple__retro-you-lose-sfx.wav")
                     messagebox.showinfo('Results',
                                         str(lottonums) + '\n' + "Your first set's matches are: "
                                         + str(
@@ -386,6 +416,7 @@ class Login:
                                             matches3) + '\n' + 'You won: '
                                         + str(winningtotal))
                 else:
+                    playsound("./sounds/256128__jimhancock__tada.wav")
                     messagebox.showinfo('Congratulations',
                                         str(lottonums) + '\n' + "Your first set's matches are: "
                                         + str(
@@ -456,17 +487,17 @@ class Login:
                 btn48.config(state=NORMAL)
                 btn49.config(state=NORMAL)
 
-            playagainbtn = Button(playsc, text='Play again', command=retry)
-            playagainbtn.place(x=170, y=500)
+            playagainbtn = Button(playsc, text='Play again', bg='#fffa69', highlightbackground='yellow', command=retry)
+            playagainbtn.place(x=210, y=500)
 
             def claimprize():
                 playsc.withdraw()
                 self.claimscreen()
 
-            claimbtn = Button(playsc, text="Claim now", command=claimprize)
-            claimbtn.place(x=50, y=500)
+            claimbtn = Button(playsc, text="Claim now", bg='#fffa69', highlightbackground='yellow', command=claimprize)
+            claimbtn.place(x=90, y=500)
 
-        playbtn = Button(playsc, text='Play', state=DISABLED, command=lotto)
+        playbtn = Button(playsc, text='Play', bg='#fffa69', highlightbackground='yellow', state=DISABLED, command=lotto)
         playbtn.place(x=170, y=450)
 
         playsc.mainloop()
@@ -480,6 +511,10 @@ class Login:
         currencyOptions = currencyConverter.json()['conversion_rates']
         currencyset = StringVar(claimsc)
         currencyset.set('ZAR')
+        claimcanvas = Canvas(claimsc, width=500, height=500, highlightbackground='yellow')
+        claimcanvas.place(x=-1, y=-1)
+        claimimg = PhotoImage(file="./images/Screen3back.png")
+        claimcanvas.create_image(230, 220, image=claimimg)
 
         value_inside.set("Select Bank")
         bankoptions = ['ABSA', 'Capitec', 'FNB', 'Nedbank']
@@ -487,7 +522,7 @@ class Login:
         class InvalidAccountName:
             pass
 
-        title = Label(claimsc, text='Claim your prize!', font=font)
+        title = Label(claimsc, text='Claim your prize!', font=font, bg='yellow')
         title.place(x=12, y=20)
 
         def bank(value_inside):
@@ -499,15 +534,15 @@ class Login:
 
         bankselect = OptionMenu(claimsc, value_inside, *bankoptions, command=bank)
         bankselect.place(x=30, y=100)
-        accountNameLabel = Label(claimsc, text="Account name")
+        accountNameLabel = Label(claimsc, text="Account name", bg='yellow')
         accountNameLabel.place(x=30, y=150)
         accountNameEntry = Entry(claimsc, state='readonly')
         accountNameEntry.place(x=150, y=150)
-        bankNrLabel = Label(claimsc, text="Account Number")
+        bankNrLabel = Label(claimsc, text="Account Number", bg='yellow')
         bankNrLabel.place(x=30, y=200)
         bankNrEntry = Entry(claimsc, state='readonly')
         bankNrEntry.place(x=150, y=200)
-        currencyLabel = Label(claimsc, text="Select currency")
+        currencyLabel = Label(claimsc, text="Select currency", bg='yellow')
         currencyLabel.place(x=30, y=230)
         winnings = score
 
@@ -515,15 +550,12 @@ class Login:
         currencySelector.place(x=150, y=230)
 
         def convert():
-            if currencyset.get() == 'ZAR':
-                currentwin = winnings
-            else:
-                currentwin = winnings * currencyOptions[currencyset.get()]
-                winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
+            currentwin = winnings * currencyOptions[currencyset.get()]
+            winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
 
         currencyConvert = Button(claimsc, text="Convert", command=convert)
         currencyConvert.place(x=280, y=230)
-        winningsLabel = Label(claimsc, text="Your winnings: ZAR" + str(winnings))
+        winningsLabel = Label(claimsc, text="Your winnings: ZAR" + str(winnings), bg='yellow')
         winningsLabel.place(x=30, y=280)
 
 
@@ -541,6 +573,7 @@ class Login:
                                    + "Nr of Games: " + str(game) + "\nEmail: " + self.emailEntry.get()
                                    + "\nTotal Amount Winned: " + str(winningsLabel.cget('text')))
                         text.close()
+                        playsound("./sounds/391539__mativve__electro-win-sound.wav")
                         messagebox.showinfo("Thank You For Playing!", "Check your email for further instructions.")
                         s = smtplib.SMTP('smtp.gmail.com', 587)
                         sender_email_id = 'lottoemail123@gmail.com'
@@ -570,6 +603,12 @@ class Login:
 
         claimBtn = Button(claimsc, text="Claim", command=claim)
         claimBtn.place(x=200, y=270)
+        bottomcanvas = Canvas(claimsc, width=100, height=81, bg="red", highlightbackground='red')
+        bottomcanvas.place(x=173, y=337)
+        bottomimg = PhotoImage(file="./images/lottocircle2.png")
+        bottomimg.subsample(10)
+        bottomcanvas.create_image(50, 42, image=bottomimg)
+
 
         claimsc.mainloop()
 
