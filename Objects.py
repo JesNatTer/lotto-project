@@ -1,3 +1,4 @@
+# Importing of all modules to be used
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
@@ -10,22 +11,28 @@ import smtplib
 from playsound import playsound
 
 
+# Defining the window of the log in screen
 root = tk.Tk()
 root.title('Ithuba National Lottery of South Africa')
 root.geometry('400x550')
 root.config(bg='yellow')
-root.wm_attributes('-alpha', 0)
-
 root.resizable(0, 0)
 
+# The creation of variables to be used in the program later
 date = dt.date.today()
 time = dt.datetime.now().strftime("%H:%M:%S")
+# To check if the email is valid
 regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+# Variables to be used for money prizes won
 score = 0
 winningtotal = 0
+# Font for certain texts
 font1 = Font(family='Helvetica', size=40)
+# Player ID variable
 playerID = ''
+# Variable to count the amount of games played
 game = 0
+# Image for background of log in screen
 canvas = Canvas(root, width=400, height=550, highlightbackground='yellow')
 canvas.place(x=0, y=0)
 img = PhotoImage(file="./images/2021_06_17_0n3_Kleki.png")
@@ -33,7 +40,15 @@ canvas.create_image(200, 275, image=img)
 
 
 class Login:
+
+    """
+    Log in screen:
+    """
+
     def __init__(self, master):
+        # Widgets for the log in screen
+
+        # Lotto image for log in screen
         self.lottocanvas = Canvas(root, width=400, height=200, bg="yellow", highlightbackground="yellow")
         self.lottocanvas.place(x=0, y=0)
         self.image = PhotoImage(file="./images/lottosymbol.png")
@@ -42,6 +57,7 @@ class Login:
         self.details = Label(master, text="Enter your details", bg='yellow')
         self.details.place(x=145, y=260)
 
+        # Label and entry widgets for log in screen
         self.nameLabel = Label(master, text="Name", bg="red")
         self.nameLabel.place(x=80, y=330)
         self.nameEntry = Entry(master)
@@ -56,8 +72,13 @@ class Login:
         self.idLabel.place(x=80, y=390)
         self.idEntry = Entry(master)
         self.idEntry.place(x=130, y=390)
-        self.score = 0
 
+        self.addressLabel = Label(master, text="Address", bg="red")
+        self.addressLabel.place(x=80, y=420)
+        self.addressEntry = Entry(master)
+        self.addressEntry.place(x=130, y=420)
+
+        # function for confirming details
         def confirmingdetails():
             try:
                 idcheck = int(self.idEntry.get())
@@ -66,6 +87,7 @@ class Login:
                 ageval = 0
                 emval = 0
 
+                # Function to confirm validity of ID
                 def idchecker():
                     idno = self.idEntry.get()
                     if 00 <= int(idno[0:2]) <= 21:
@@ -85,6 +107,10 @@ class Login:
                         messagebox.showerror("Invalid ID", "ID is invalid")
                     elif self.idEntry.get()[2:4] == '02' and int(self.idEntry.get()[4:6]) > 29:
                         messagebox.showerror("Invalid ID", "ID is invalid")
+                    elif int(self.idEntry.get()[10]) > 1:
+                        messagebox.showerror("Invalid ID", "ID is invalid")
+                    elif self.idEntry.get()[11] != '8':
+                        messagebox.showerror("Invalid ID", "ID is invalid")
                     else:
                         if yd > 18 or (yd == 18 and md == 0 and day < int(date.day)) or (yd == 18 and md > 0):
                             return 1
@@ -93,16 +119,18 @@ class Login:
                             playsound("./sounds/362206__taranp__horn-fail-wahwah-1.wav")
                             root.destroy()
 
+                # Function to check validity of email
                 def emailchecker():
                     if re.search(regex, self.emailEntry.get()):
                         return 1
                     else:
                         messagebox.showerror("Invalid Email", "Please enter a valid email address")
 
+                # if statement for access to gamescreen
                 if idchecker() == 1 and emailchecker() == 1:
                     text = open("playerlog.txt", '+w')
                     text.write("Player: " + self.nameEntry.get() + "\nEmail: " + self.emailEntry.get()
-                               + "\nID: " + self.idEntry.get())
+                               + "\nID: " + self.idEntry.get() + "\nAddress: " + self.addressEntry.get())
                     text.close()
                     playsound("./sounds/171671__leszek-szary__success-1.wav")
                     messagebox.showinfo("You Qualify", "Enter the game!")
@@ -113,29 +141,39 @@ class Login:
                 messagebox.showerror("Invalid Input", "ID must be a number")
                 self.idEntry.delete(0, END)
 
+        # button for validity checking function
         self.theButton = Button(master, text="Enter", command=confirmingdetails)
-        self.theButton.place(x=180, y=420)
+        self.theButton.place(x=180, y=450)
+
+    """
+    Play the lotto screen:
+    """
 
     def playscreen(self):
+        # Creation of playscreen window
         playsc = Toplevel()
         playsc.title('Ithuba National Lottery of South Africa - Play')
         playsc.geometry('700x550')
         playsc.config(bg='yellow')
         playsc.resizable(0, 0)
+        # background image for playscreen window
         playcanvas = Canvas(playsc, width=800, height=600, highlightbackground='yellow')
         playcanvas.place(x=0, y=-1)
         playbackimg = PhotoImage(file="./images/Screen2back.png")
         playcanvas.create_image(400, 290, image=playbackimg)
+        # variables to be used in lotto game
         list1 = []
         list2 = []
         list3 = []
         game = 1
         font1 = Font(family='Helvetica', size=35)
+        # image of lotto symbol
         rightcanvas = Canvas(playsc, width=300, height=250, highlightbackground='red', bg='red')
         rightcanvas.place(x=400, y=0)
         rightimg = PhotoImage(file="./images/lottocircle.png")
         rightcanvas.create_image(150, 100, image=rightimg)
 
+        # function for the creation of sets
         def play(num):
             if len(list1) == 5:
                 playbtn.config(state=NORMAL)
@@ -150,6 +188,7 @@ class Login:
             elif len(list2) == 6 and len(list1) == 6 and len(list3) < 6 and num not in list3:
                 list3.append(num)
                 set3.config(text=list3)
+            # if all lists are filled, buttons are disabled
             if len(list3) == 6:
                 btn1.config(state=DISABLED)
                 btn2.config(state=DISABLED)
@@ -201,6 +240,7 @@ class Login:
                 btn48.config(state=DISABLED)
                 btn49.config(state=DISABLED)
 
+        # buttons to append to the sets to be used
         btn1 = Button(playsc, text=1, bg='#fffa69', highlightbackground='yellow', command=lambda: play(1))
         btn1.place(x=20, y=10)
         btn2 = Button(playsc, text=2, bg='#fffa69', highlightbackground='yellow', command=lambda: play(2))
@@ -301,6 +341,7 @@ class Login:
         btn49.place(x=140, y=210)
         total = Label(playsc, text="", bg='red')
         total.place(x=520, y=300)
+        # player id variable and widgets
         playeridLabel = Label(playsc, text="PlayerID: ", bg='red')
         playeridLabel.place(x=450, y=250)
         global playerID
@@ -308,6 +349,7 @@ class Login:
         playerid = Label(playsc, bg='red', text=playerID)
         playerid.place(x=520, y=250)
 
+        # widgets for displaying created sets on screen
         set1 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
         set1.place(x=0, y=260)
         set2 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
@@ -315,21 +357,29 @@ class Login:
         set3 = Label(playsc, text='', font=font1, bg='yellow', width=15, justify='center')
         set3.place(x=0, y=360)
 
+        # function to exit program
         def exitprogram():
             playsc.destroy()
             root.destroy()
 
+        # exit button for exit function
         exitbtn = Button(playsc, text="Exit", bg='red', highlightbackground='black', command=exitprogram)
         exitbtn.place(x=520, y=500)
 
+        # function for where the entry sets are compared with winning numbers
         def lotto():
+            # game counter
             global game
             game += 1
+            # creation of lotto numbers
             lottonums = random.sample(range(1, 49), 6)
+            # list for prizes for corresponding matches
             matches = [0, 0, 20.00, 100.50, 2384.00, 8584.00, 10000000.00]
+            # matches variables
             matches1 = 0
             matches2 = 0
             matches3 = 0
+            # variables to indicate that whether a set was used/ how much sets were used
             played = 0
             played2 = 0
             played3 = 0
@@ -338,6 +388,7 @@ class Login:
             matchset = []
             matchset2 = []
             matchset3 = []
+            # comparison of sets with lotto numbers
             for x in range(0, 6):
                 if len(list1) == 6:
                     played = 1
@@ -354,6 +405,7 @@ class Login:
                     if list3[x] == lottonums[x]:
                         matches3 += 1
                         matchset3.append(list3[x])
+            # if one set is used
             if played == 1 and played2 == 0 and played3 == 0:
                 winningtotal = matches[matches1]
                 score = score + winningtotal
@@ -372,6 +424,7 @@ class Login:
                                         str(lottonums) + '\n' + 'Your matches are: ' + str(matches1)
                                         + '\n' + 'You won: ' + str(winningtotal))
                 playbtn.config(state=DISABLED)
+            # if two sets are used
             elif played == 1 and played2 == 1 and played3 == 0:
                 winningtotal = matches[matches1] + matches[matches2]
                 score = score + winningtotal
@@ -396,6 +449,7 @@ class Login:
                                             matches1) + '\n' + "Your second set's matches are : " + str(
                                             matches2) + '\n'
                                         + 'You won: ' + str(winningtotal))
+            # if three sets are used
             elif played == 1 and played2 == 1 and played3 == 1:
                 winningtotal = matches[matches1] + matches[matches2] + matches[matches3]
                 score = score + winningtotal
@@ -426,9 +480,11 @@ class Login:
                                             matches3) + '\n' + 'You won: '
                                         + str(winningtotal))
 
+            # displaying winnings on screen
             total.config(text="R" + str(score))
             playbtn.config(state=DISABLED)
 
+            # function to play again
             def retry():
                 list1.clear()
                 list2.clear()
@@ -487,22 +543,31 @@ class Login:
                 btn48.config(state=NORMAL)
                 btn49.config(state=NORMAL)
 
+            # button to play again
             playagainbtn = Button(playsc, text='Play again', bg='#fffa69', highlightbackground='yellow', command=retry)
             playagainbtn.place(x=210, y=500)
 
+            # function to claim prize
             def claimprize():
                 playsc.withdraw()
                 self.claimscreen()
 
+            # button for claimprize function
             claimbtn = Button(playsc, text="Claim now", bg='#fffa69', highlightbackground='yellow', command=claimprize)
             claimbtn.place(x=90, y=500)
 
+        # button for playing the game/ comparing sets with lotto numbers
         playbtn = Button(playsc, text='Play', bg='#fffa69', highlightbackground='yellow', state=DISABLED, command=lotto)
         playbtn.place(x=170, y=450)
 
         playsc.mainloop()
 
+    """
+    Claim your prize screen
+    """
+
     def claimscreen(self):
+        # creation of window of claim screen
         claimsc = Toplevel()
         claimsc.geometry('450x450')
         font = Font(family='Helvetica', size=30)
@@ -549,15 +614,22 @@ class Login:
         currencySelector = OptionMenu(claimsc, currencyset, *currencyOptions)
         currencySelector.place(x=150, y=230)
 
+        class ConnectionError1:
+            pass
+
+        # function to convert currencies
         def convert():
-            currentwin = winnings * currencyOptions[currencyset.get()]
-            winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
+            try:
+                currentwin = winnings * currencyOptions[currencyset.get()]
+                winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
+            except ConnectionError1:
+                messagebox.showerror("Could not request currency converter",
+                                     "Please make sure your device is connected to the internet.")
 
         currencyConvert = Button(claimsc, text="Convert", command=convert)
         currencyConvert.place(x=280, y=230)
         winningsLabel = Label(claimsc, text="Your winnings: ZAR" + str(winnings), bg='yellow')
         winningsLabel.place(x=30, y=280)
-
 
         def claim():
             if accountNameEntry.get() == '' or bankNrEntry.get() == '':
@@ -569,9 +641,10 @@ class Login:
                         raise InvalidAccountName
                     else:
                         text = open("playerlog.txt", "+a")
-                        text.write("\n\n" + str(date) + "   " + str(time) + "\nPlayer Name: " + self.nameEntry.get() + "\n"
-                                   + "Nr of Games: " + str(game) + "\nEmail: " + self.emailEntry.get()
-                                   + "\nTotal Amount Winned: " + str(winningsLabel.cget('text')))
+                        text.write(
+                            "\n\n" + str(date) + "   " + str(time) + "\nPlayer Name: " + self.nameEntry.get() + "\n"
+                            + "Nr of Games: " + str(game) + "\nEmail: " + self.emailEntry.get()
+                            + "\nTotal Amount Winned: " + str(winningsLabel.cget('text')))
                         text.close()
                         playsound("./sounds/391539__mativve__electro-win-sound.wav")
                         messagebox.showinfo("Thank You For Playing!", "Check your email for further instructions.")
@@ -609,13 +682,9 @@ class Login:
         bottomimg.subsample(10)
         bottomcanvas.create_image(50, 42, image=bottomimg)
 
-
         claimsc.mainloop()
-
 
 page = Login(root)
 
 root.mainloop()
 
-
-#\n
