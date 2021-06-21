@@ -1,5 +1,6 @@
 # Importing of all modules to be used
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox
 import datetime as dt
@@ -61,22 +62,23 @@ class Login:
         self.nameLabel = Label(master, text="Name", bg="red")
         self.nameLabel.place(x=80, y=330)
         self.nameEntry = Entry(master)
-        self.nameEntry.place(x=130, y=330)
+        self.nameEntry.place(x=150, y=330)
 
         self.emailLabel = Label(master, text="Email", bg='red')
         self.emailLabel.place(x=80, y=360)
         self.emailEntry = Entry(master)
-        self.emailEntry.place(x=130, y=360)
+        self.emailEntry.place(x=150, y=360)
 
         self.idLabel = Label(master, text='ID', bg='red')
         self.idLabel.place(x=80, y=390)
         self.idEntry = Entry(master)
-        self.idEntry.place(x=130, y=390)
+        self.idEntry.place(x=150, y=390)
 
         self.addressLabel = Label(master, text="Address", bg="red")
         self.addressLabel.place(x=80, y=420)
         self.addressEntry = Entry(master)
-        self.addressEntry.place(x=130, y=420)
+        self.addressEntry.place(x=150, y=420)
+        self.claimscreen()
 
         # function for confirming details
         def confirmingdetails():
@@ -571,25 +573,34 @@ class Login:
         claimsc = Toplevel()
         claimsc.geometry('450x450')
         font = Font(family='Helvetica', size=30)
+        # api for currency conversion
         currencyConverter = requests.get("https://v6.exchangerate-api.com/v6/55fb55ceb1003bf5512656e2/latest/ZAR")
+        # sets value of bank option menu before any is selected
         value_inside = StringVar(claimsc)
+        # options for currency conversion
         currencyOptions = currencyConverter.json()['conversion_rates']
+        # sets value of currency converter option menu before any is selected
         currencyset = StringVar(claimsc)
         currencyset.set('ZAR')
+        # background image for screen 3
         claimcanvas = Canvas(claimsc, width=500, height=500, highlightbackground='yellow')
         claimcanvas.place(x=-1, y=-1)
         claimimg = PhotoImage(file="./images/Screen3back.png")
         claimcanvas.create_image(230, 220, image=claimimg)
 
         value_inside.set("Select Bank")
+        # options for bank selection
         bankoptions = ['ABSA', 'Capitec', 'FNB', 'Nedbank']
 
+        # error for account name if it includes anything other than alphabet characters
         class InvalidAccountName:
             pass
 
+        # title of claim screen
         title = Label(claimsc, text='Claim your prize!', font=font, bg='yellow')
         title.place(x=12, y=20)
 
+        # function that makes it so account name and number can only be entered after selecting bank
         def bank(value_inside):
             if value_inside == 'Select Bank':
                 pass
@@ -597,23 +608,32 @@ class Login:
                 accountNameEntry.config(state='normal')
                 bankNrEntry.config(state='normal')
 
+        # bank select option menu
         bankselect = OptionMenu(claimsc, value_inside, *bankoptions, command=bank)
         bankselect.place(x=30, y=100)
+        # claim screen widgets
         accountNameLabel = Label(claimsc, text="Account name", bg='yellow')
         accountNameLabel.place(x=30, y=150)
         accountNameEntry = Entry(claimsc, state='readonly')
         accountNameEntry.place(x=150, y=150)
         bankNrLabel = Label(claimsc, text="Account Number", bg='yellow')
-        bankNrLabel.place(x=30, y=200)
+        bankNrLabel.place(x=30, y=180)
         bankNrEntry = Entry(claimsc, state='readonly')
-        bankNrEntry.place(x=150, y=200)
+        bankNrEntry.place(x=150, y=180)
         currencyLabel = Label(claimsc, text="Select currency", bg='yellow')
-        currencyLabel.place(x=30, y=230)
+        currencyLabel.place(x=30, y=210)
         winnings = score
 
-        currencySelector = OptionMenu(claimsc, currencyset, *currencyOptions)
-        currencySelector.place(x=150, y=230)
+        currencycombo = []
+        for x in currencyOptions.keys():
+            currencycombo.append(x)
 
+        currencySelector = ttk.Combobox(claimsc, textvariable=currencyset)
+        currencySelector['values'] = currencycombo
+        currencySelector['state'] = 'readonly'
+        currencySelector.place(x=150, y=210)
+
+        # error for when user is not connected to the internet
         class ConnectionError1:
             pass
 
@@ -621,16 +641,17 @@ class Login:
         def convert():
             try:
                 currentwin = winnings * currencyOptions[currencyset.get()]
-                winningsLabel.config(text=str(currencyset.get()) + " " + str(currentwin))
+                winningsLabel.config(text="Your winnings: " + str(currencyset.get()) + " " + str(currentwin))
             except ConnectionError1:
                 messagebox.showerror("Could not request currency converter",
                                      "Please make sure your device is connected to the internet.")
 
         currencyConvert = Button(claimsc, text="Convert", command=convert)
-        currencyConvert.place(x=280, y=230)
+        currencyConvert.place(x=195, y=237)
         winningsLabel = Label(claimsc, text="Your winnings: ZAR" + str(winnings), bg='yellow')
         winningsLabel.place(x=30, y=280)
 
+        # function that sends user email after they claim prize
         def claim():
             if accountNameEntry.get() == '' or bankNrEntry.get() == '':
                 messagebox.showerror("Fields unfilled", "Please enter both account name and bank account number")
@@ -640,6 +661,7 @@ class Login:
                     if str.isalpha(accountNameEntry.get()) is False:
                         raise InvalidAccountName
                     else:
+                        # writing to text file
                         text = open("playerlog.txt", "+a")
                         text.write(
                             "\n\n" + str(date) + "   " + str(time) + "\nPlayer Name: " + self.nameEntry.get() + "\n"
@@ -648,6 +670,7 @@ class Login:
                         text.close()
                         playsound("./sounds/391539__mativve__electro-win-sound.wav")
                         messagebox.showinfo("Thank You For Playing!", "Check your email for further instructions.")
+                        # sending of email
                         s = smtplib.SMTP('smtp.gmail.com', 587)
                         sender_email_id = 'lottoemail123@gmail.com'
                         receiver_email_id = self.emailEntry.get()
@@ -675,7 +698,7 @@ class Login:
                     messagebox.showerror("Invalid Account Name", "Please enter valid account name (characters only")
 
         claimBtn = Button(claimsc, text="Claim", command=claim)
-        claimBtn.place(x=200, y=270)
+        claimBtn.place(x=200, y=280)
         bottomcanvas = Canvas(claimsc, width=100, height=81, bg="red", highlightbackground='red')
         bottomcanvas.place(x=173, y=337)
         bottomimg = PhotoImage(file="./images/lottocircle2.png")
@@ -683,6 +706,7 @@ class Login:
         bottomcanvas.create_image(50, 42, image=bottomimg)
 
         claimsc.mainloop()
+
 
 page = Login(root)
 
