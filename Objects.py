@@ -682,8 +682,9 @@ class Login:
                         message = "Subject: Congratulations!!!\n"
                         message = message + "Thank you for playing " + self.nameEntry.get() + "\nYour winnings are: " \
                                   + winningsLabel.cget(
-                            'text') + "\nBelow are your details:" + "\nPlayer ID: " + playerID + "\nAccount name: " \
-                                  + accountNameEntry.get() + "\nAccount number: " + bankNrEntry.get()
+                                  'text') + "\nBelow are your details:" + "\nPlayer ID: " + playerID \
+                                  + "\nAccount name: " + accountNameEntry.get() + "\nAccount number: " \
+                                  + bankNrEntry.get() + "\nBank: " + str(value_inside.get())
 
                         s.sendmail(sender_email_id, receiver_email_id, message)
 
