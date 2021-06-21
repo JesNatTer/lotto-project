@@ -78,7 +78,6 @@ class Login:
         self.addressLabel.place(x=80, y=420)
         self.addressEntry = Entry(master)
         self.addressEntry.place(x=150, y=420)
-        self.claimscreen()
 
         # function for confirming details
         def confirmingdetails():
